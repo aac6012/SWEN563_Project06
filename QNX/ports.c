@@ -1,4 +1,4 @@
-/*
+/**
  * ports.c
  *
  */
@@ -11,14 +11,19 @@
 #include <pthread.h>
 #include <stdio.h>
 
+
 uintptr_t portAReg;
 uintptr_t portBReg;
+
+uintptr_t ioCtrlReg;
+uintptr_t baseReg;
 
 int initIOCtrl(void){
     if (ThreadCtl(_NTO_TCTL_IO,NULL)){
         printf("Failed to get access to Helios IO Ports\n");
         return -1;
     }
+    printf("Successfully got access to Helios IO Ports\n") ;
 
     ioCtrlReg  = mmap_device_io(1, IO_CTRL_REGISTER);
     baseReg    = mmap_device_io(1, BASE_IO_REGISTER);
@@ -37,48 +42,4 @@ int initIOCtrl(void){
 void initPorts(){
 	portAReg = mmap_device_io(1, PORT_A_REGISTER);
 	portBReg = mmap_device_io(1, PORT_B_REGISTER);
-}
-
-void setPin(enum port prt, enum pin pn){
-	uint8_t pins;
-	switch(prt){
-		case PORTA :
-			pins = in8(portAReg);
-			pins |= pn;
-			out8(portAReg, pins);
-			break;
-		case PORTB :
-			pins = in8(portBReg);
-			pins |= pn;
-			out8(portBReg, pn);
-			break;
-		case PORTC :
-			pins = in8(portCReg);
-			pins |= pn;
-			out8(portCReg, pn);
-		default :
-			break;
-	}
-}
-
-void clearPin(enum port prt, enum pin pn){
-	uint8_t pins;
-	    switch(prt){
-	        case PORTA :
-	            pins = in8(portAReg);
-	            pins &= ~pn;
-	            out8(portAReg, pins);
-	            break;
-	        case PORTB :
-	            pins = in8(portBReg);
-	            pins &= ~pn;
-	            out8(portBReg, pn);
-	            break;
-	        case PORTC :
-	            pins = in8(portCReg);
-	            pins &= ~pn;
-	            out8(portCReg, pn);
-	        default :
-	            break;
-	    }
 }
