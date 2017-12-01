@@ -19,7 +19,12 @@
 #define ADC_INPUT_GAIN_CONTROL_REGISTER ( BASE_IO_REGISTER + 3 ) // Write
 #define ADC_INPUT_STATUS_REGISTER 		( BASE_IO_REGISTER + 3 ) // Read
 
+
+#define MIN_ADC_OUTPUT -32768
+#define MAX_ADC_OUTPUT 32767
+
 void initADC(void) ;
 void initADCPtrs(void) ;
+int readADC(void) ;
 
 #endif /* ADC_H_ */

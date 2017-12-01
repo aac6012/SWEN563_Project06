@@ -7,15 +7,47 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 #include "ports.h"
 #include "ADC.h"
 
+#define NUM_SERVO_POSITIONS 11
+
+unsigned char calculateServoPosition(int reading) ;
+void printCommunicationStatus(int status) ;
+
 int main(int argc, char *argv[]) {
+
+	int adc_reading, communication_status ;
+	unsigned char servo_position ;
 
 	initIOCtrl() ;
 	initPorts() ;
 
 	initADC() ;
 
+	//initialSTMHandshake() ; //Uncomment this when ready to test with STM32
+
+	while(1){
+		adc_reading = readADC() ;
+		servo_position = calculateServoPosition(adc_reading) ;
+		printf("Reading: %i\tPosition: %i\n", adc_reading, servo_position) ;
+		communication_status = outputToSTM(servo_position) ;
+		printCommunicationStatus(communication_status) ;
+	}
+
 	return EXIT_SUCCESS;
+}
+
+/**
+ * Determines which of the 11 positions the provided reading corresponds to.
+ */
+unsigned char calculateServoPosition(int reading){
+	return (unsigned char) ( (reading - MIN_ADC_OUTPUT) / ( (MAX_ADC_OUTPUT - MIN_ADC_OUTPUT) / NUM_SERVO_POSITIONS ) ) ;
+}
+
+void printCommunicationStatus(int status){
+	if(status != 0){
+		printf("Communication failure between Helios and STM32!") ;
+	}
 }

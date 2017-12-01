@@ -8,6 +8,7 @@
 
 #include <sys/mman.h>
 #include <hw/inout.h>
+#include <stdio.h>
 
 #include "ADC.h"
 
@@ -24,6 +25,8 @@ uintptr_t 	command_reg,
  * Initializes the Analog-to-Digital Converter to
  */
 void initADC(void) {
+
+	initADCPtrs() ;
 
 	// Set the input channel for ADC
 	// Vin0 = pin34 on Data Acquisition
@@ -51,3 +54,23 @@ void initADCPtrs(void){
 	input_gain_control_reg = mmap_device_io(1,ADC_INPUT_GAIN_CONTROL_REGISTER) ;
 	input_status_reg = input_gain_control_reg ;
 }
+
+
+int readADC(void){
+	int8_t high, low ;
+	signed int result ;
+
+	// Initiate conversion by setting STARTAD bit (7)
+	out8(command_reg, 0x80) ;
+
+	// Wait for conversion to complete (until ADBUSY bit goes low)
+	while (in8(input_status_reg) & 0x80);
+
+	// Read results
+	low = in8(out_low_reg) ;
+	high = in8(out_high_reg) ;
+	result = ( (int)high * 256 ) + low ;
+
+	return result ;
+}
+
