@@ -10,6 +10,7 @@
       <TargetName>Target 1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060300::V5.06 update 3 (build 300)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32L476VGTx</Device>
@@ -412,6 +413,16 @@
               <FileName>LED.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\LED.h</FilePath>
+            </File>
+            <File>
+              <FileName>PWM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\PWM.c</FilePath>
+            </File>
+            <File>
+              <FileName>ports.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ports.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -96,7 +96,7 @@ int outputToSTM(unsigned char servo_pos){
  * Returns 0 if success, 1 if failure
  */
 int waitWithTimeout(int timeout){
-	while(--timeout > 0){
+	while(timeout--	 > 0){
 		// Wait for mask bit to be cleared by STM
 		if( !(in8(portAReg) & STM_PROCESSING_MASK) ){
 			return 0 ; // Success
