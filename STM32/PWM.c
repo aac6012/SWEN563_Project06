@@ -51,17 +51,6 @@ void PWM_Init(void) {
 	//Initialize with 2% duty cycle
 	TIM2->CCR1 = DUTY_CYCLE * (0.02) ;
 	
-	/**
-	* GPIO PA1 / TIM5 setup
-	*/
-	// Set GPIO PA1 mode to Alternate Function
-	GPIOA->MODER &= ~(0x03 << 2) ;
-	GPIOA->MODER |= (0x02 << 2) ;
-	
-	// Set GPIO A pin1 to alternate function to AF2
-	//GPIOA->AFR[0] &= ~(0x0F << 4) ;
-	GPIOA->AFR[0] |= (0x02 << 4) ;
-	
 }
 
 
