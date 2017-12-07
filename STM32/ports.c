@@ -30,19 +30,22 @@ void GPIOA_Init(void){
  */
 int getDataFromHelios(void){
 	int data ;
-	
+	/*
 	// Waits for Helios to send signal that data is ready to be read
 	if( waitWithTimeout(TIMEOUT_VALUE) ){
 		return -1 ; // Communication timeout
 	}
+	*/
 	
 	// Read the data (servo position) from GPIOA input registers PA0-PA3
 	data = GPIOA->IDR & 0x0F ;
 	
+	/*
 	// Clear PA4 to signal to Helios that the STM has received the data
 	GPIOA->MODER &= ~( 2 << 2*4 ) ; // Output mode
 	GPIOA->ODR &= ~(0x10) ;
 	GPIOA->MODER &= ~( 3 << 2*4 ) ; // Input mode
+	*/
 	
 	return data ;
 }

@@ -31,7 +31,6 @@ int main(int argc, char *argv[]) {
 	while(1){
 		adc_reading = readADC() ;
 		servo_position = calculateServoPosition(adc_reading) ;
-		printf("Reading: %i\tPosition: %i\n", adc_reading, servo_position) ;
 		communication_status = outputToSTM(servo_position) ;
 		printCommunicationStatus(communication_status) ;
 	}

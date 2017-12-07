@@ -11,20 +11,20 @@ void PWM_Init(void) {
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN ;
 	
 	/**
-	* GPIO PA0 / TIM2 setup
+	* GPIO PA5 / TIM2 setup
 	*/
-	// Set GPIO PA0 mode to Alternate Function
-	GPIOA->MODER &= ~(0x03) ;
-	GPIOA->MODER |= 0x02 ;
+	// Set GPIO PA5 mode to Alternate Function
+	GPIOA->MODER &= ~(0x03 << 5*2) ;
+	GPIOA->MODER |= (0x02 << 5*2);
 	
-	// Set GPIO A pin0 alternate function to AF1
-	GPIOA->AFR[0] |= 0x01;
+	// Set GPIO A pin5 alternate function to AF1
+	GPIOA->AFR[0] |= (0x01 << 5*4);
 	
 	// Enable Timer 2 clock
 	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
 	
 	// Max count
-	TIM2->ARR = DUTY_CYCLE ;
+	TIM2->ARR = PWM_PERIOD ;
 	
 	// Set the timer prescalar value
 	// This value will set the PWM to 20ms periods
@@ -49,7 +49,7 @@ void PWM_Init(void) {
 	TIM2->CR1 |= TIM_CR1_CEN ;
 	
 	//Initialize with 2% duty cycle
-	TIM2->CCR1 = DUTY_CYCLE * (0.02) ;
+	TIM2->CCR1 = PWM_PERIOD * (0.02) ;
 	
 }
 
@@ -58,7 +58,5 @@ void PWM_Init(void) {
  * Set the servo position in the range of [0,10]
  */
 void setPosition(int position){
-	
-	
-	
+	TIM2->CCR1 = dutyCycleLookup[position] ;
 }

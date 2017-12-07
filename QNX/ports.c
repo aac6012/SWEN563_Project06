@@ -72,19 +72,19 @@ int initialSTMHandshake(void){
  */
 int outputToSTM(unsigned char servo_pos){
 
-	// Wait until STM is done processing last data
-	if( waitWithTimeout(TIMEOUT_VALUE) != 0 ){
-		return 1 ; // Failure
-	}
+//	// Wait until STM is done processing last data
+//	if( waitWithTimeout(TIMEOUT_VALUE) != 0 ){
+//		return 1 ; // Failure
+//	}
 
 	// Write new data to port
 	out8(portAReg, servo_pos) ;
 
-	// Write mask to signal to STM that it can process new data.
-	out8(portAReg, STM_PROCESSING_MASK & servo_pos) ;
-
-	//DEBUG CODE - in the future, STM_PROCESSING_MASK will be cleared by STM32
-	out8(portAReg, servo_pos) ; // Delete this when able to test with STM
+//	// Write mask to signal to STM that it can process new data.
+//	out8(portAReg, STM_PROCESSING_MASK & servo_pos) ;
+//
+//	//DEBUG CODE - in the future, STM_PROCESSING_MASK will be cleared by STM32
+//	out8(portAReg, servo_pos) ; // Delete this when able to test with STM
 
 	return 0 ; // Success
 }
