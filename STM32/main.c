@@ -12,31 +12,26 @@ int main(void) {
 	
 	System_Clock_Init() ; // Switch System Clock = 80 MHz
 	LED_Init() ;
-	GPIOA_Init() ;
+	GPIOAB_Init() ;
 	PWM_Init() ;
 	
+	initialHandshake() ;
 	
 	/**
-	 * LED Errors:
-	 * - Green = Invalid data received (outside of possible range)
-	 * - Red = Communication with Helios lost
+	 * Green LED on means Communication Error
 	 */
-	Red_LED_Off() ;
 	Green_LED_Off() ;
 	
 	while(1){
 		if(isCommunicationActive()){
-			Red_LED_Off() ;
+			Green_LED_Off() ;
 			data = getDataFromHelios() ;
 			// Verify that valid data was received
 			if( data >= 0 && data <= 10 ){
-				Green_LED_Off() ;
 				setPosition(data) ;
-			} else{
-				Green_LED_On() ;
 			}
 		} else{
-			Red_LED_On() ;
+			Green_LED_On() ;
 		}
 	}
 	

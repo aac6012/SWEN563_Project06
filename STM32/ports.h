@@ -10,7 +10,7 @@
 // PB3 is used to output signal to Helios
 #define STM32_COMMUNICATION_ACTIVE_MASK (0x01 << 3)
 
-void GPIOA_Init(void) ;
+void GPIOAB_Init(void) ;
 void initialHandshake(void) ;
 int getDataFromHelios(void) ;
 int isCommunicationActive(void) ;

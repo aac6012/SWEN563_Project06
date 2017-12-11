@@ -12,7 +12,7 @@
 
 #include "ports.h"
 
-uintptr_t portAReg;
+uintptr_t portAReg, portBReg, portCReg;
 
 uintptr_t ioCtrlReg;
 uintptr_t baseReg;
@@ -29,22 +29,28 @@ int initIOCtrl(void){
     }
     printf("Successfully got access to Helios IO Ports\n") ;
 
-    ioCtrlReg  = mmap_device_io(1, IO_CTRL_REGISTER);
-    baseReg    = mmap_device_io(1, BASE_IO_REGISTER);
-
-    out8(baseReg, 0x44);
-    out8(ioCtrlReg, 0x00);
-
     return 0;
 }
 
 
 /**
- * Initializes ports A and B:
- * Port A will connect to the STM32 (output)
+ * Initializes GPIO ports:
+ * Port A will connect to the STM32 for servo position(output)
+ * Ports B/C will be used to monitor communicatino b/w devices
  */
 void initPorts(){
-	portAReg = mmap_device_io(1, PORT_A_REGISTER);
+
+    ioCtrlReg  = mmap_device_io(1, IO_CTRL_REGISTER);
+    baseReg    = mmap_device_io(1, BASE_IO_REGISTER);
+
+	portAReg = mmap_device_io(1, PORT_A_REGISTER) ;
+	portBReg = mmap_device_io(1, PORT_B_REGISTER) ;
+	portCReg = mmap_device_io(1, PORT_C_REGISTER) ;
+
+    out8(baseReg, 0x44);
+    // Set low bits (0-3) of port C to input mode
+    out8(ioCtrlReg, 0x01);
+
 }
 
 
@@ -53,10 +59,10 @@ void initPorts(){
  */
 void initialHandshake(void){
 	// Send initial handshake
-	out8(portAReg, HELIOS_COMMUNICATION_ACTIVE_MASK) ;
-	
+	out8(portBReg, HELIOS_COMMUNICATION_ACTIVE_MASK) ;
+
 	// Wait for response from STM32
-	while( !(in8(portASReg, STM32_COMMUNICATION_ACTIVE_MASK)) ){}
+	while( !(in8(portCReg) & STM32_COMMUNICATION_ACTIVE_MASK) ){}
 	
 }
 
@@ -65,12 +71,8 @@ void initialHandshake(void){
  * Writes the servo_pos value to the STM32.
  */
 void outputToSTM(unsigned char servo_pos){
-	// Maintain bits 4-7 for communication status
-	unsigned char currentMSB = in8(portAReg) & 0xF0 ;
-	
 	// Write new data to port A
-	out8(portAReg, currentMSB & servo_pos) ;
-	
+	out8(portAReg, servo_pos) ;
 }
 
 
@@ -79,5 +81,5 @@ void outputToSTM(unsigned char servo_pos){
  * Return 1 if communication is active, 0 if communication has failed
  */
 int isCommunicationActive(void){
-	return ( in8(portAReg) & STM32_COMMUNICATION_ACTIVE_MASK) ) ? 1 : 0 ;
+	return ( in8(portCReg) & STM32_COMMUNICATION_ACTIVE_MASK ) ? 1 : 0 ;
 }

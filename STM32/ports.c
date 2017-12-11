@@ -9,8 +9,11 @@
  * Initialize ports A & B:
  * - Turn on the peripheral clock for GPIOA
  * - Set ports PA0-PA3 to be input
+ * - Turn on peripheral clock for GPIOB
+ * - Set port PB2 to be input from Helios
+ * - Set port PB3 to be output to Helios
  */
-void GPIO_Init(void){
+void GPIOAB_Init(void){
 	// Enable GPIOA clock
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN ;
 	
