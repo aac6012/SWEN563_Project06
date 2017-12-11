@@ -4,13 +4,15 @@
 
 #ifndef __PORTS_H
 #define __PORTS_H
- 
-#define HELIOS_SENT_DATA_MASK 0x10
 
-#define TIMEOUT_VALUE 100000
+// PB2 is used to input signal from Helios
+#define HELIOS_COMMUNICATION_ACTIVE_MASK (0x01 << 2) 
+// PB3 is used to output signal to Helios
+#define STM32_COMMUNICATION_ACTIVE_MASK (0x01 << 3)
 
 void GPIOA_Init(void) ;
+void initialHandshake(void) ;
 int getDataFromHelios(void) ;
-int waitWithTimeout(int timeout) ;
+int isCommunicationActive(void) ;
 
 #endif

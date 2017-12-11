@@ -12,17 +12,15 @@
 #define PORT_A_REGISTER  0x288
 #define IO_CTRL_REGISTER 0x28B
 
-// TODO: tweak timeout values later after some testing.
-#define HANDSHAKE_TIMEOUT_VALUE 1000000
-#define TIMEOUT_VALUE 100000
-
-// This mask is used to check if the STM is ready to receive messages through the port.
-#define STM_PROCESSING_MASK 0x80
+// GPOIA bit 4 is used to output signal to STM32
+#define HELIOS_COMMUNICATION_ACTIVE_MASK (0x01 << 4)
+// GPIOA bit 5 is used to input signal from STM32
+#define STM32_COMMUNICATION_ACTIVE_MASK (0x01 << 5)
 
 int initIOCtrl(void);
 void initPorts(void);
-int initialSTMHandshake(void) ;
-int outputToSTM(unsigned char servo_pos);
-int waitWithTimeout(int timeout) ;
+void initialHandshake(void) ;
+void outputToSTM(unsigned char servo_pos);
+int isCommunicationActive(void) ;
 
 #endif /* PORTS_H_ */

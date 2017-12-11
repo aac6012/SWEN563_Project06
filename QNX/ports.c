@@ -3,8 +3,6 @@
  *
  */
 
-#include "ports.h"
-
 #include <sys/mman.h>
 #include <sys/neutrino.h>
 #include <hw/inout.h>
@@ -12,10 +10,13 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "ports.h"
+
 uintptr_t portAReg;
 
 uintptr_t ioCtrlReg;
 uintptr_t baseReg;
+
 
 /**
  * Gets privity to IO ports
@@ -37,6 +38,7 @@ int initIOCtrl(void){
     return 0;
 }
 
+
 /**
  * Initializes ports A and B:
  * Port A will connect to the STM32 (output)
@@ -48,59 +50,34 @@ void initPorts(){
 
 /**
  * Establishes communications with the STM board.
- * Returns 0 if success, 1 if failure.
  */
-int initialSTMHandshake(void){
-	//Send initial handshake
-	out8(portAReg, STM_PROCESSING_MASK) ;
-
-	// Wait for response
-	return waitWithTimeout(HANDSHAKE_TIMEOUT_VALUE) ;
+void initialHandshake(void){
+	// Send initial handshake
+	out8(portAReg, HELIOS_COMMUNICATION_ACTIVE_MASK) ;
+	
+	// Wait for response from STM32
+	while( !(in8(portASReg, STM32_COMMUNICATION_ACTIVE_MASK)) ){}
+	
 }
 
 
-
 /**
- * Waits for STM32 to signal that it's ready to receive data and
- * then writes the servo_pos value to the connected port.
- *
- * After writing data, then it masks the data to tell the STM32
- * that it's finished writing the data.  The STM32 will clear this
- * bit when it's finished processing the data and ready to receive again.
- *
- * Return 0 if success, 1 if failure.
+ * Writes the servo_pos value to the STM32.
  */
-int outputToSTM(unsigned char servo_pos){
-
-//	// Wait until STM is done processing last data
-//	if( waitWithTimeout(TIMEOUT_VALUE) != 0 ){
-//		return 1 ; // Failure
-//	}
-
-	// Write new data to port
-	out8(portAReg, servo_pos) ;
-
-//	// Write mask to signal to STM that it can process new data.
-//	out8(portAReg, STM_PROCESSING_MASK & servo_pos) ;
-//
-//	//DEBUG CODE - in the future, STM_PROCESSING_MASK will be cleared by STM32
-//	out8(portAReg, servo_pos) ; // Delete this when able to test with STM
-
-	return 0 ; // Success
+void outputToSTM(unsigned char servo_pos){
+	// Maintain bits 4-7 for communication status
+	unsigned char currentMSB = in8(portAReg) & 0xF0 ;
+	
+	// Write new data to port A
+	out8(portAReg, currentMSB & servo_pos) ;
+	
 }
 
+
 /**
- * Waits for STM to clear bit of STM_PROCESSING_MASK
- * to signal that it's ready to receive data.
- *
- * Returns 0 if success, 1 if failure
+ * Determine the communication status b/w Helios and STM32
+ * Return 1 if communication is active, 0 if communication has failed
  */
-int waitWithTimeout(int timeout){
-	while(timeout--	 > 0){
-		// Wait for mask bit to be cleared by STM
-		if( !(in8(portAReg) & STM_PROCESSING_MASK) ){
-			return 0 ; // Success
-		}
-	}
-	return 1 ; // Failure
+int isCommunicationActive(void){
+	return ( in8(portAReg) & STM32_COMMUNICATION_ACTIVE_MASK) ) ? 1 : 0 ;
 }
